@@ -687,8 +687,10 @@ config_after_install() {
             
     read -rp "Would you like to customize the Panel settings? (If not, a random settings will be applied) [y/n]: " config_confirm
     if [[ "${config_confirm}" == "y" || "${config_confirm}" == "Y" ]]; then
+        
         read -p "Please set up your username: " config_username
         echo -e "${yellow}Your username will be: ${config_username}${plain}"
+
         read -p "Please set up your password: " config_password
         echo -e "${yellow}Your password will be: ${config_password}${plain}"
         read -p "Please set up the panel port: " config_port
