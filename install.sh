@@ -684,73 +684,29 @@ config_after_install() {
             break
         fi
     done
-    
-    if [[ ${#existing_webBasePath} -lt 4 ]]; then
-        if [[ "$existing_hasDefaultCredential" == "true" ]]; then
             
-            read -rp "Would you like to customize the Panel settings? (If not, a random settings will be applied) [y/n]: " config_confirm
-            if [[ "${config_confirm}" == "y" || "${config_confirm}" == "Y" ]]; then
-                read -p "Please set up your username: " config_account
-                echo -e "${yellow}Your username will be: ${config_username}${plain}"
-                read -p "Please set up your password: " config_password
-                echo -e "${yellow}Your password will be: ${config_password}${plain}"
-                read -p "Please set up the panel port: " config_port
-                echo -e "${yellow}Your panel port is: ${config_port}${plain}"
-                read -p "Please set up the web base path (ip:port/webbasepath/): " config_webBasePath
-                echo -e "${yellow}Your web base path is: ${config_webBasePath}${plain}"
-            else
-                local config_port=$(shuf -i 1024-62000 -n 1)
-                echo -e "${yellow}Generated random port: ${config_port}${plain}"
-                local config_username=$(gen_random_string 10)
-                echo -e "${yellow}Generated random username: ${config_username}${plain}"
-                local config_password=$(gen_random_string 10)
-                echo -e "${yellow}Generated random password: ${config_password}${plain}"
-                local config_webBasePath=$(gen_random_string 18)
-                echo -e "${yellow}Generated random WebPath: ${config_webBasePath}${plain}"
-            fi
-            
-            ${xui_folder}/x-ui setting -username "${config_username}" -password "${config_password}" -port "${config_port}" -webBasePath "${config_webBasePath}"
-
-        else
-            local config_webBasePath=$(gen_random_string 18)
-            echo -e "${yellow}WebBasePath is missing or too short. Generating a new one...${plain}"
-            ${xui_folder}/x-ui setting -webBasePath "${config_webBasePath}"
-            echo -e "${green}New WebBasePath: ${config_webBasePath}${plain}"
-
-            # If the panel is already installed but no certificate is configured, prompt for SSL now
-            if [[ -z "${existing_cert}" ]]; then
-                echo ""
-                echo -e "${green}═══════════════════════════════════════════${plain}"
-                echo -e "${green}     SSL Certificate Setup (RECOMMENDED)   ${plain}"
-                echo -e "${green}═══════════════════════════════════════════${plain}"
-                echo -e "${yellow}Let's Encrypt now supports both domains and IP addresses!${plain}"
-                echo ""
-                prompt_and_setup_ssl "${existing_port}" "${config_webBasePath}" "${server_ip}"
-                echo -e "${green}Access URL:  https://${SSL_HOST}:${existing_port}/${config_webBasePath}${plain}"
-            else
-                # If a cert already exists, just show the access URL
-                echo -e "${green}Access URL: https://${server_ip}:${existing_port}/${config_webBasePath}${plain}"
-            fi
-        fi
+    read -rp "Would you like to customize the Panel settings? (If not, a random settings will be applied) [y/n]: " config_confirm
+    if [[ "${config_confirm}" == "y" || "${config_confirm}" == "Y" ]]; then
+        read -p "Please set up your username: " config_account
+        echo -e "${yellow}Your username will be: ${config_username}${plain}"
+        read -p "Please set up your password: " config_password
+        echo -e "${yellow}Your password will be: ${config_password}${plain}"
+        read -p "Please set up the panel port: " config_port
+        echo -e "${yellow}Your panel port is: ${config_port}${plain}"
+        read -p "Please set up the web base path (ip:port/webbasepath/): " config_webBasePath
+        echo -e "${yellow}Your web base path is: ${config_webBasePath}${plain}"
     else
-        if [[ "$existing_hasDefaultCredential" == "true" ]]; then
-            local config_username=$(gen_random_string 10)
-            local config_password=$(gen_random_string 10)
-            
-            echo -e "${yellow}Default credentials detected. Security update required...${plain}"
-            ${xui_folder}/x-ui setting -username "${config_username}" -password "${config_password}"
-            echo -e "Generated new random login credentials:"
-            echo -e "###############################################"
-            echo -e "${green}Username: ${config_username}${plain}"
-            echo -e "${green}Password: ${config_password}${plain}"
-            echo -e "###############################################"
-        else
-            echo -e "${green}Username, Password, and WebBasePath are properly set.${plain}"
-        fi
-
-        # Existing install: if no cert configured, prompt user for SSL setup
-        # Properly detect empty cert by checking if cert: line exists and has content after it
+        local config_port=$(shuf -i 1024-62000 -n 1)
+        echo -e "${yellow}Generated random port: ${config_port}${plain}"
+        local config_username=$(gen_random_string 10)
+        echo -e "${yellow}Generated random username: ${config_username}${plain}"
+        local config_password=$(gen_random_string 10)
+        echo -e "${yellow}Generated random password: ${config_password}${plain}"
+        local config_webBasePath=$(gen_random_string 18)
+        echo -e "${yellow}Generated random WebPath: ${config_webBasePath}${plain}"
     fi
+    
+    ${xui_folder}/x-ui setting -username "${config_username}" -password "${config_password}" -port "${config_port}" -webBasePath "${config_webBasePath}"
     
     ${xui_folder}/x-ui migrate
 }
